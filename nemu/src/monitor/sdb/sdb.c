@@ -1,5 +1,6 @@
 #include <isa.h>
 #include <cpu/cpu.h>
+#include <memory/vaddr.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
@@ -36,10 +37,46 @@ static int cmd_c(char *args) {
 static int cmd_q(char *args) {
   nemu_state.state = 4;
   return -1;
-  // return 0;
 }
 
 static int cmd_help(char *args);
+
+static int cmd_si(char *args) {
+  int i=0;
+  if(args == NULL)
+    i=1;
+  else
+    i = atoi(args);
+  cpu_exec(i);
+  return 1;
+}
+
+static int cmd_info(char *args) {
+  if(*args == 'r')
+    isa_reg_display();
+  else {
+    printf("Illegal argument.\n");
+    return 0;
+  }
+  return 2;
+}
+
+static int cmd_x(char *args) {
+  printf("%s\n", args);
+  char *num = strtok(NULL, " ");
+  printf("num = %s\n", num);
+  char *addr = num + strlen(num) + 1;
+  printf("addr = %s\n", addr);
+  int i = atoi(num);
+  printf("i = %d\n", i);
+  vaddr_t vaddr = strtol(addr, NULL, 16);
+  printf("vaddr = 0x%08x\n", vaddr);
+  for(int j=0; j<i; j++)
+  {
+    printf("address: %s, value: 0x%08x\n", addr, vaddr_read(vaddr+j*4, 4));
+  }
+  return 3;
+}
 
 static struct {
   const char *name;
@@ -49,6 +86,9 @@ static struct {
   { "help", "Display informations about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
+  { "si", "Single step run, ep. si args", cmd_si },
+  { "info", "Print RF status or watchpoint info, ep. info r, info w", cmd_info },
+  { "x", "Scan memory from a start address", cmd_x},
 
   /* TODO: Add more commands */
 
