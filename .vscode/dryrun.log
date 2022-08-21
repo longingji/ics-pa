@@ -1,0 +1,5 @@
+make --dry-run --keep-going --print-directory
+make: Entering directory '/home/xinglongji/XinglongJi/learn/simulator/ics2021'
+echo "Please run 'make' under any subprojects to compile."
+make: Leaving directory '/home/xinglongji/XinglongJi/learn/simulator/ics2021'
+ 

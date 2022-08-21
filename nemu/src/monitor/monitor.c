@@ -17,8 +17,8 @@ static void welcome() {
   Log("Build time: %s, %s", __TIME__, __DATE__);
   printf("Welcome to %s-NEMU!\n", ASNI_FMT(str(__GUEST_ISA__), ASNI_FG_YELLOW ASNI_BG_RED));
   printf("For help, type \"help\"\n");
-  Log("Exercise: Please remove me in the source code and compile NEMU again.");
-  assert(0);
+  // Log("Exercise: Please remove me in the source code and compile NEMU again.");
+  // assert(0);
 }
 
 #ifndef CONFIG_TARGET_AM
@@ -46,6 +46,7 @@ static long load_img() {
   Log("The image is %s, size = %ld", img_file, size);
 
   fseek(fp, 0, SEEK_SET);
+  /*将文件中的程序内容读到物理内存中*/
   int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
   assert(ret == 1);
 
@@ -102,6 +103,7 @@ void init_monitor(int argc, char *argv[]) {
   IFDEF(CONFIG_DEVICE, init_device());
 
   /* Perform ISA dependent initialization. */
+  /*build-in image在初始化指令集时就会被加载到物理内存中*/
   init_isa();
 
   /* Load the image to memory. This will overwrite the built-in image. */
